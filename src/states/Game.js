@@ -11,8 +11,31 @@ export default class extends Phaser.State {
     this.game.physics.startSystem(Phaser.Physics.Arcade);
     this.game.plugins.add(Phaser.Plugin.ArcadeSlopes);
 
-    this.background = this.game.add.tileSprite(0, 0, 7846, 1920, 'background');
+    // this.background = this.game.add.tileSprite(0, 0, 7846, 1920, 'background');
     // this.background.fixedToCamera = true;
+    this.mountainsBack = this.game.add.tileSprite(0,
+        this.game.height - this.game.cache.getImage('mountains-back').height,
+        this.game.width,
+        this.game.cache.getImage('mountains-back').height,
+        'mountains-back'
+    );
+
+    this.mountainsMid1 = this.game.add.tileSprite(0,
+        this.game.height - this.game.cache.getImage('mountains-mid1').height,
+        this.game.width,
+        this.game.cache.getImage('mountains-mid1').height,
+        'mountains-mid1'
+    );
+
+    this.mountainsMid2 = this.game.add.tileSprite(0,
+        this.game.height - this.game.cache.getImage('mountains-mid2').height,
+        this.game.width,
+        this.game.cache.getImage('mountains-mid2').height,
+        'mountains-mid2'
+    );
+    this.mountainsBack.fixedToCamera = true;
+    this.mountainsMid1.fixedToCamera = true;
+    this.mountainsMid2.fixedToCamera = true;
 
 
     this.map = this.game.add.tilemap('tilemap');
@@ -54,7 +77,7 @@ export default class extends Phaser.State {
     // PLAYER AND PHYSSISSSSS -----
 
     //Add the sprite to the game and enable arcade physics on it
-    this.player = this.game.add.sprite(50, 37, 'supermeatboy');
+    this.player = this.game.add.sprite(80, 37, 'supermeatboy');
     this.game.physics.arcade.enable(this.player);
 
     //Set some physics on the sprite
@@ -71,6 +94,8 @@ export default class extends Phaser.State {
     //Enable cursor keys so we can create some controls
     this.cursors = this.game.input.keyboard.createCursorKeys();
     this.speedModifier = 0;
+    const music = this.game.add.audio('song');
+    music.play();
     // this.ground.debug = true;
 
   }
@@ -110,17 +135,25 @@ export default class extends Phaser.State {
     if (this.player.body.velocity.x > 0) {
       this.player.scale.x = 1;
       this.player.angle = velocity_rotation + random_degree
+      this.moveMountains(1);
     }
 
     // sprite moving LEFT
     if (this.player.body.velocity.x < 0) {
       this.player.scale.x = -1;
       this.player.angle = 180 + velocity_rotation + random_degree
+      this.moveMountains(-1);
     }
 
     if (this.player.body.velocity.y == 0) {
       this.player.angle = 0;
     }
+  }
+
+  moveMountains(modifier) {
+    this.mountainsBack.tilePosition.x -= 0.1 * modifier;
+    this.mountainsMid1.tilePosition.x -= 0.3 * modifier;
+    this.mountainsMid2.tilePosition.x -= 0.6 * modifier;
   }
   render () {
     // if (__DEV__) {
