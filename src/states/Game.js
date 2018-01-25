@@ -71,7 +71,6 @@ export default class extends Phaser.State {
 
     //Enable cursor keys so we can create some controls
     this.cursors = this.game.input.keyboard.createCursorKeys();
-
   }
 
   update () {
@@ -84,18 +83,30 @@ export default class extends Phaser.State {
     if (this.cursors.left.isDown) {
       this.player.body.velocity.x = -250;
       this.background.tilePosition.x += 2.5;
-      this.player.scale.x = 1;
     } else if (this.cursors.right.isDown) {
       this.player.body.velocity.x = 250;
       this.background.tilePosition.x -= 2.5;
-      this.player.scale.x = -1;
-    } else {
+    } else if (this.cursors.down.isDown){
       this.player.body.velocity.x = 0;
+    }
+
+    const velocity_rotation = this.player.body.angle * 180 / Math.PI
+
+    // sprite moving RIGHT
+    if (this.player.body.velocity.x > 0) {
+      this.player.scale.x = -1;
+      this.player.angle = velocity_rotation
+    }
+
+    // sprite moving LEFT
+    if (this.player.body.velocity.x < 0) {
+      this.player.scale.x = 1;
+      this.player.angle = 180 + velocity_rotation
     }
   }
   render () {
-    // if (__DEV__) {
-    //   this.game.debug.spriteInfo(this.mushroom, 32, 32)
-    // }
+    if (__DEV__) {
+      this.game.debug.spriteInfo(this.player, 32, 32)
+    }
   }
 }
