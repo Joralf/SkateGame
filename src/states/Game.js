@@ -1,6 +1,5 @@
 /* globals __DEV__ */
 import Phaser from 'phaser'
-import Mushroom from '../sprites/Mushroom'
 import ArcadeSlopes from 'phaser-arcade-slopes'
 
 export default class extends Phaser.State {
@@ -8,18 +7,18 @@ export default class extends Phaser.State {
   preload () {}
 
   create () {
+
     this.game.physics.startSystem(Phaser.Physics.Arcade);
     this.game.plugins.add(Phaser.Plugin.ArcadeSlopes);
 
-    this.background = this.game.add.tileSprite(0, 0, 800, 600, 'background');
-    this.background.fixedToCamera = true;
+    this.background = this.game.add.tileSprite(0, 0, 7846, 1920, 'background');
+    // this.background.fixedToCamera = true;
 
 
     this.map = this.game.add.tilemap('tilemap');
     this.map.addTilesetImage('ninja-tiles64', 'tiles');
 
     this.ground = this.map.createLayer('GroundLayer');
-    this.ground.debug = true;
     this.ground.resizeWorld();
 
     this.game.slopes.convertTilemapLayer(this.ground, {
@@ -55,12 +54,12 @@ export default class extends Phaser.State {
     // PLAYER AND PHYSSISSSSS -----
 
     //Add the sprite to the game and enable arcade physics on it
-    this.player = this.game.add.sprite(50, 50, 'supermeatboy');
+    this.player = this.game.add.sprite(50, 37, 'supermeatboy');
     this.game.physics.arcade.enable(this.player);
 
     //Set some physics on the sprite
     this.player.body.bounce.y = 0.2;
-    this.player.body.gravity.y = 2000;
+    this.player.body.gravity.y = 1200;
     this.player.body.velocity.x = 0;
     this.player.body.collideWorldBounds = true;
     this.player.anchor.setTo(.5,.5);
@@ -71,37 +70,56 @@ export default class extends Phaser.State {
 
     //Enable cursor keys so we can create some controls
     this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.speedModifier = 0;
+    // this.ground.debug = true;
+
   }
 
   update () {
     //Make the sprite collide with the ground layer
     this.game.physics.arcade.collide(this.player, this.ground);
-    //Make the sprite jump when the up key is pushed
-    if (this.cursors.up.isDown) {
-      this.player.body.velocity.y = -300;
-    }
-    if (this.cursors.left.isDown) {
-      this.player.body.velocity.x = -250;
-      this.background.tilePosition.x += 2.5;
-    } else if (this.cursors.right.isDown) {
-      this.player.body.velocity.x = 250;
-      this.background.tilePosition.x -= 2.5;
-    } else if (this.cursors.down.isDown){
-      this.player.body.velocity.x = 0;
+
+    if (this.cursors.up.isDown && this.player.body.touching.down) {
+       const speed = this.player.body.speed;
+       if ( speed < 300 ) {
+         this.player.body.velocity.y = -300;
+       } else {
+         this.player.body.velocity.y = -speed;
+       }
     }
 
+    if (this.cursors.right.isDown) {
+      if (this.speedModifier < 10) {
+        this.speedModifier += 0.2;
+        this.player.body.velocity.x += this.speedModifier;
+      }
+    } else if (this.cursors.left.isDown) {
+      if (this.speedModifier > -10) {
+        this.speedModifier -= 0.2;
+        this.player.body.velocity.x += this.speedModifier;
+      }
+    } else {
+      this.speedModifier = 0;
+    }
+
+
     const velocity_rotation = this.player.body.angle * 180 / Math.PI
+    const random_degree =  Math.random() * (10 - 0) - 5;
 
     // sprite moving RIGHT
     if (this.player.body.velocity.x > 0) {
-      this.player.scale.x = -1;
-      this.player.angle = velocity_rotation
+      this.player.scale.x = 1;
+      this.player.angle = velocity_rotation + random_degree
     }
 
     // sprite moving LEFT
     if (this.player.body.velocity.x < 0) {
-      this.player.scale.x = 1;
-      this.player.angle = 180 + velocity_rotation
+      this.player.scale.x = -1;
+      this.player.angle = 180 + velocity_rotation + random_degree
+    }
+
+    if (this.player.body.velocity.y == 0) {
+      this.player.angle = 0;
     }
   }
   render () {

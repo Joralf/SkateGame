@@ -19,10 +19,10 @@ export default class extends Phaser.State {
     this.game.load.image('tiles', 'assets/images/ninja-tiles64.png');
 
     // Player
-    this.game.load.image('supermeatboy', 'assets/images/supermeatboy.png');
+    this.game.load.image('supermeatboy', 'assets/images/bear50x37.png');
 
     // Background
-    this.load.image('background', 'assets/images/background.png');
+    this.load.image('background', 'assets/images/background2.png');
   }
 
   create () {
