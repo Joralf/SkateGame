@@ -79,7 +79,7 @@ export default class extends Phaser.State {
     //Make the sprite collide with the ground layer
     this.game.physics.arcade.collide(this.player, this.ground);
 
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
+    if ((this.cursors.up.isDown || this.game.input.pointer1.isDown) && this.player.body.touching.down) {
        const speed = this.player.body.speed;
        if ( speed < 300 ) {
          this.player.body.velocity.y = -300;
