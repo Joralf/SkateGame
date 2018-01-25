@@ -13,7 +13,16 @@ export default class extends Phaser.State {
     //
     // load your assets
     //
-    this.load.image('mushroom', 'assets/images/mushroom2.png')
+
+    // Tiles
+    this.game.load.tilemap('tilemap', 'assets/level.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.image('retrotiles01image', 'assets/images/retrotiles01.png');
+
+    // Player
+    this.game.load.image('supermeatboy', 'assets/images/supermeatboy.png');
+
+    // Background
+    this.load.image('background', 'assets/images/background.png');
   }
 
   create () {
