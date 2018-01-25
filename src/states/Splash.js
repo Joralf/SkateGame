@@ -15,8 +15,8 @@ export default class extends Phaser.State {
     //
 
     // Tiles
-    this.game.load.tilemap('tilemap', 'assets/level.json', null, Phaser.Tilemap.TILED_JSON);
-    this.game.load.image('retrotiles01image', 'assets/images/retrotiles01.png');
+    this.game.load.tilemap('tilemap', 'assets/tilemap.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.image('tiles', 'assets/images/ninja-tiles64.png');
 
     // Player
     this.game.load.image('supermeatboy', 'assets/images/supermeatboy.png');

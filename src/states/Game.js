@@ -1,35 +1,61 @@
 /* globals __DEV__ */
 import Phaser from 'phaser'
 import Mushroom from '../sprites/Mushroom'
+import ArcadeSlopes from 'phaser-arcade-slopes'
 
 export default class extends Phaser.State {
   init () {}
   preload () {}
 
   create () {
-    this.game.physics.startSystem(Phaser.Physics.Ninja);
-
+    this.game.physics.startSystem(Phaser.Physics.Arcade);
+    this.game.plugins.add(Phaser.Plugin.ArcadeSlopes);
 
     this.background = this.game.add.tileSprite(0, 0, 800, 600, 'background');
     this.background.fixedToCamera = true;
 
-    // Add the tilemap and tileset image. The first parameter in addTilesetImage
-    // is the name you gave the tilesheet when importing it into Tiled, the second
-    // is the key to the asset in Phaser
+
     this.map = this.game.add.tilemap('tilemap');
-    this.map.addTilesetImage('retrotiles01', 'retrotiles01image');
+    this.map.addTilesetImage('ninja-tiles64', 'tiles');
 
-    // //Add both the background and ground layers. We won't be doing anything with the
-    // //GroundLayer though
-    this.backgroundlayer = this.map.createLayer('BackgroundLayer');
-    this.groundLayer = this.map.createLayer('GroundLayer');
+    this.ground = this.map.createLayer('GroundLayer');
+    this.ground.debug = true;
+    this.ground.resizeWorld();
 
-    //Before you can use the collide function you need to set what tiles can collide
-    this.map.setCollisionBetween(1, 100, true, 'GroundLayer');
-    this.groundLayer.resizeWorld();
+    this.game.slopes.convertTilemapLayer(this.ground, {
+        2:  'FULL',
+        3:  'HALF_BOTTOM_LEFT',
+        4:  'HALF_BOTTOM_RIGHT',
+        6:  'HALF_TOP_LEFT',
+        5:  'HALF_TOP_RIGHT',
+        15: 'QUARTER_BOTTOM_LEFT_LOW',
+        16: 'QUARTER_BOTTOM_RIGHT_LOW',
+        17: 'QUARTER_TOP_RIGHT_LOW',
+        18: 'QUARTER_TOP_LEFT_LOW',
+        19: 'QUARTER_BOTTOM_LEFT_HIGH',
+        20: 'QUARTER_BOTTOM_RIGHT_HIGH',
+        21: 'QUARTER_TOP_RIGHT_HIGH',
+        22: 'QUARTER_TOP_LEFT_HIGH',
+        23: 'QUARTER_LEFT_BOTTOM_HIGH',
+        24: 'QUARTER_RIGHT_BOTTOM_HIGH',
+        25: 'QUARTER_RIGHT_TOP_LOW',
+        26: 'QUARTER_LEFT_TOP_LOW',
+        27: 'QUARTER_LEFT_BOTTOM_LOW',
+        28: 'QUARTER_RIGHT_BOTTOM_LOW',
+        29: 'QUARTER_RIGHT_TOP_HIGH',
+        30: 'QUARTER_LEFT_TOP_HIGH',
+        31: 'HALF_BOTTOM',
+        32: 'HALF_RIGHT',
+        33: 'HALF_TOP',
+        34: 'HALF_LEFT'
+    });
+
+    this.map.setCollisionBetween(2, 34, true, 'GroundLayer');
+
+    // PLAYER AND PHYSSISSSSS -----
 
     //Add the sprite to the game and enable arcade physics on it
-    this.player = this.game.add.sprite(50, this.game.world.centerY, 'supermeatboy');
+    this.player = this.game.add.sprite(50, 50, 'supermeatboy');
     this.game.physics.arcade.enable(this.player);
 
     //Set some physics on the sprite
@@ -39,6 +65,8 @@ export default class extends Phaser.State {
     this.player.body.collideWorldBounds = true;
     this.player.anchor.setTo(.5,.5);
     //Make the camera follow the sprite
+    this.game.slopes.enable(this.player);
+
     this.game.camera.follow(this.player);
 
     //Enable cursor keys so we can create some controls
@@ -48,7 +76,7 @@ export default class extends Phaser.State {
 
   update () {
     //Make the sprite collide with the ground layer
-    this.game.physics.arcade.collide(this.player, this.groundLayer);
+    this.game.physics.arcade.collide(this.player, this.ground);
     //Make the sprite jump when the up key is pushed
     if (this.cursors.up.isDown) {
       this.player.body.velocity.y = -300;
